@@ -106,16 +106,10 @@ exports['walk @slimio/is 1'] = {
       ],
       "maintainers": [
         {
-          "email": "mickael.croquet@laposte.net",
-          "name": "mcroquet"
-        },
-        {
-          "email": "sebastien48criquet@gmail.com",
-          "name": "ahkrin"
-        },
-        {
           "email": "gentilhomme.thomas@gmail.com",
-          "name": "fraxken"
+          "name": "fraxken",
+          "at": "2019-06-11T06:41:41.590Z",
+          "version": "1.5.1"
         },
         {
           "email": "alexandre.malaj@gmail.com",
@@ -132,5 +126,6 @@ exports['from pacote 1'] = [
   "scannerVersion",
   "vulnerabilityStrategy",
   "warnings",
+  "authors",
   "dependencies"
 ]
