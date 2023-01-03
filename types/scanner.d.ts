@@ -34,6 +34,11 @@ declare namespace Scanner {
     /** Id of the package (useful for usedBy relation) */
     id: number;
     isDevDependency: boolean;
+    /**
+     * Tell if the given package exist on the configured remote registry (npm by default)
+     * @default true
+     */
+    existOnRemoteRegistry: boolean;
     /** By whom (id) is used the package */
     usedBy: Record<string, string>;
     /** Size on disk of the extracted tarball (in bytes) */
@@ -56,7 +61,7 @@ declare namespace Scanner {
      *
      * @see https://github.com/NodeSecure/js-x-ray/blob/master/WARNINGS.md
      */
-    warnings: JSXRay.Warning<JSXRay.BaseWarning>[];
+    warnings: JSXRay.Warning<JSXRay.WarningDefault>[];
     /** Tarball composition (files and dependencies) */
     composition: {
       /** Files extensions (.js, .md, .exe etc..) */
@@ -64,6 +69,7 @@ declare namespace Scanner {
       files: string[];
       /** Minified files (foo.min.js etc..) */
       minified: string[];
+      alias: Record<string, string>;
       required_files: string[];
       required_thirdparty: string[];
       required_nodejs: string[];
@@ -155,7 +161,7 @@ declare namespace Scanner {
     licenses: License[];
     ast: {
       dependencies: Record<string, JSXRay.Dependency>;
-      warnings: JSXRay.Warning<JSXRay.BaseWarning>[];
+      warnings: JSXRay.Warning<JSXRay.WarningDefault>[];
     };
   }
 

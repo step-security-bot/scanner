@@ -37,10 +37,24 @@ export async function* searchDeepDependencies(packageName, gitURL, options) {
     registry,
     cache: `${os.homedir()}/.npm`
   });
-  const { dependencies, customResolvers } = mergeDependencies(pkg);
+  const { dependencies, customResolvers, alias } = mergeDependencies(pkg);
 
   const current = new Dependency(name, version, parent);
-  gitURL !== null && current.isGit(gitURL);
+  current.alias = Object.fromEntries(alias);
+
+  if (gitURL !== null) {
+    current.isGit(gitURL);
+    try {
+      await pacote.manifest(`${name}@${version}`, {
+        ...NPM_TOKEN,
+        registry,
+        cache: `${os.homedir()}/.npm`
+      });
+    }
+    catch {
+      current.existOnRemoteRegistry = false;
+    }
+  }
   current.addFlag("isDeprecated", deprecated === true);
   current.addFlag("hasCustomResolver", customResolvers.size > 0);
   current.addFlag("hasDependencies", dependencies.size > 0);
@@ -88,8 +102,9 @@ export async function* deepReadEdges(currentPackageName, options) {
       registry,
       cache: `${os.homedir()}/.npm`
     });
-    const { customResolvers } = mergeDependencies(pkg);
+    const { customResolvers, alias } = mergeDependencies(pkg);
 
+    current.alias = Object.fromEntries(alias);
     current.addFlag("hasValidIntegrity", _integrity === integrity);
     current.addFlag("isDeprecated");
     current.addFlag("hasCustomResolver", customResolvers.size > 0);
@@ -125,8 +140,20 @@ export async function* getRootDependencies(manifest, options) {
     registry
   } = options;
 
-  const { dependencies, customResolvers } = mergeDependencies(manifest, void 0);
+  const { dependencies, customResolvers, alias } = mergeDependencies(manifest, void 0);
   const parent = new Dependency(manifest.name, manifest.version);
+  parent.alias = Object.fromEntries(alias);
+
+  try {
+    await pacote.manifest(`${manifest.name}@${manifest.version}`, {
+      ...NPM_TOKEN,
+      registry,
+      cache: `${os.homedir()}/.npm`
+    });
+  }
+  catch {
+    parent.existOnRemoteRegistry = false;
+  }
   parent.addFlag("hasCustomResolver", customResolvers.size > 0);
   parent.addFlag("hasDependencies", dependencies.size > 0);
 
